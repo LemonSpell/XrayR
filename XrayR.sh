@@ -84,7 +84,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/LemonSpell/XrayR/master/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/LemonSpell/XrayR/master/install-new.sh)
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -108,7 +108,7 @@ update() {
 #        fi
 #        return 0
 #    fi
-    bash <(curl -Ls https://raw.githubusercontent.com/LemonSpell/XrayR/master/install.sh) $version
+    bash <(curl -Ls https://raw.githubusercontent.com/LemonSpell/XrayR/master/install-new.sh) $version
     if [[ $? == 0 ]]; then
         echo -e "${green}更新完成，已自动重启 XrayR，请使用 XrayR log 查看运行日志${plain}"
         exit
@@ -120,11 +120,25 @@ update() {
 }
 
 config() {
-  if [[ $# == 0 ]]; then
-        cat /etc/XrayR/config.yml
-    else
-        XrayR-tool $*
-    fi
+    echo "XrayR在修改配置后会自动尝试重启"
+    vi /etc/XrayR/config.yml
+    sleep 2
+    check_status
+    case $? in
+        0)
+            echo -e "XrayR状态: ${green}已运行${plain}"
+            ;;
+        1)
+            echo -e "检测到您未启动XrayR或XrayR自动重启失败，是否查看日志？[Y/n]" && echo
+            read -e -p "(默认: y):" yn
+            [[ -z ${yn} ]] && yn="y"
+            if [[ ${yn} == [Yy] ]]; then
+               show_log
+            fi
+            ;;
+        2)
+            echo -e "XrayR状态: ${red}未安装${plain}"
+    esac
 }
 
 uninstall() {
@@ -142,7 +156,6 @@ uninstall() {
     systemctl reset-failed
     rm /etc/XrayR/ -rf
     rm /usr/local/XrayR/ -rf
-    rm /usr/bin/XrayR-tool -rf
 
     echo ""
     echo -e "卸载成功，如果你想删除此脚本，则退出脚本后运行 ${green}rm /usr/bin/XrayR -f${plain} 进行删除"
@@ -345,7 +358,7 @@ show_enable_status() {
 
 show_XrayR_version() {
     echo -n "XrayR 版本："
-    /usr/local/XrayR/XrayR -version
+    /usr/local/XrayR/XrayR version
     echo ""
     if [[ $# == 0 ]]; then
         before_show_menu
@@ -373,8 +386,8 @@ show_usage() {
 
 show_menu() {
     echo -e "
-  ${green}XrayR 后端管理脚本，${plain}${red}不适用于docker${plain}
---- https://github.com/BobCoderS9/XrayR ---
+  ${green}LemonSpell XrayR管理系统，${plain}${red}不适用于docker${plain}
+--- https://github.com/LemonSpell/XrayR ---
   ${green}0.${plain} 修改配置
 ————————————————
   ${green}1.${plain} 安装 XrayR
