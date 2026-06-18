@@ -123,7 +123,7 @@ install_XrayR() {
     else
         last_version=$1
         # 修改点3：指向官方核心仓库下载指定版本的二进制文件
-        url="https://github.com/XrayR-project/XrayR/releases/download/${last_version}/XrayR-linux-${arch}.zip"
+        url="https://github.com/XrayR-project/XrayR/releases/download/v${last_version#v}/XrayR-linux-${arch}.zip"
         echo -e "开始安装 XrayR $1"
         wget -q -N --no-check-certificate -O /usr/local/XrayR/XrayR-linux.zip ${url}
         if [[ $? -ne 0 ]]; then
