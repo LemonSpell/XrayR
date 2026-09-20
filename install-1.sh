@@ -636,8 +636,8 @@ fi
 XRAYR_EOF
 
     chmod +x /usr/bin/XrayR
-    rm -f /usr/bin/xrayr
-    ln -s /usr/bin/XrayR /usr/bin/xrayr
+    rm -rf /usr/bin/xrayr
+    ln -sf /usr/bin/XrayR /usr/bin/xrayr
     chmod +x /usr/bin/xrayr
     curl -o /usr/bin/XrayR-tool -Ls https://raw.githubusercontent.com/LemonSpell/XrayR/master/XrayR-tool
     chmod +x /usr/bin/XrayR-tool
