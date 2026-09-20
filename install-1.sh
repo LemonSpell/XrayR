@@ -7,10 +7,8 @@ plain='\033[0m'
 
 cur_dir=$(pwd)
 
-# check root
 [[ $EUID -ne 0 ]] && echo -e "${red}错误：${plain} 必须使用root用户运行此脚本！\n" && exit 1
 
-# check os
 if [[ -f /etc/redhat-release ]]; then
     release="centos"
 elif cat /etc/issue | grep -Eqi "debian"; then
@@ -49,7 +47,6 @@ fi
 
 os_version=""
 
-# os version
 if [[ -f /etc/os-release ]]; then
     os_version=$(awk -F'[= ."]' '/VERSION_ID/{print $3}' /etc/os-release)
 fi
@@ -81,7 +78,6 @@ install_base() {
     fi
 }
 
-# 0: running, 1: not running, 2: not installed
 check_status() {
     if [[ ! -f /etc/systemd/system/XrayR.service ]]; then
         return 2
@@ -107,14 +103,12 @@ install_XrayR() {
     cd /usr/local/XrayR/
 
     if [ $# == 0 ] ;then
-        # 指向 LemonSpell/XrayR 仓库获取最新版本号
         last_version=$(curl -Ls "https://api.github.com/repos/LemonSpell/XrayR/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
             echo -e "${red}检测 XrayR 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 XrayR 版本安装${plain}"
             exit 1
         fi
         echo -e "检测到 XrayR 最新版本：${last_version}，开始安装"
-        # 指向 LemonSpell/XrayR 仓库下载最新版二进制文件
         wget -q -N --no-check-certificate -O /usr/local/XrayR/XrayR-linux.zip https://github.com/LemonSpell/XrayR/releases/download/${last_version}/XrayR-linux-${arch}.zip
         if [[ $? -ne 0 ]]; then
             echo -e "${red}下载 XrayR 失败，请确保你的服务器能够下载 Github 的文件${plain}"
@@ -122,7 +116,6 @@ install_XrayR() {
         fi
     else
         last_version=$1
-        # 指向 LemonSpell/XrayR 仓库下载指定版本的二进制文件
         url="https://github.com/LemonSpell/XrayR/releases/download/v${last_version#v}/XrayR-linux-${arch}.zip"
         echo -e "开始安装 XrayR $1"
         wget -q -N --no-check-certificate -O /usr/local/XrayR/XrayR-linux.zip ${url}
@@ -137,17 +130,16 @@ install_XrayR() {
     chmod +x XrayR
     mkdir /etc/XrayR/ -p
     rm /etc/systemd/system/XrayR.service -f
-    
-    # 保持指向 LemonSpell 仓库获取系统服务配置文件
+
     file="https://raw.githubusercontent.com/LemonSpell/XrayR/master/XrayR.service"
     wget -q -N --no-check-certificate -O /etc/systemd/system/XrayR.service ${file}
-    
+
     systemctl daemon-reload
     systemctl stop XrayR
     systemctl enable XrayR
     echo -e "${green}XrayR ${last_version}${plain} 安装完成，已设置开机自启"
     cp geoip.dat /etc/XrayR/
-    cp geosite.dat /etc/XrayR/ 
+    cp geosite.dat /etc/XrayR/
 
     if [[ ! -f /etc/XrayR/config.yml ]]; then
         cp config.yml /etc/XrayR/
@@ -180,8 +172,7 @@ install_XrayR() {
     if [[ ! -f /etc/XrayR/rulelist ]]; then
         cp rulelist /etc/XrayR/
     fi
-    
-    # 管理菜单：直接写入官方原版 XrayR.sh 内容（所有链接已改为 LemonSpell）
+
     cat > /usr/bin/XrayR <<'XRAYR_EOF'
 #!/bin/bash
 
@@ -192,10 +183,8 @@ plain='\033[0m'
 
 version="v1.0.0"
 
-# check root
 [[ $EUID -ne 0 ]] && echo -e "${red}错误: ${plain} 必须使用root用户运行此脚本！\n" && exit 1
 
-# check os
 if [[ -f /etc/redhat-release ]]; then
     release="centos"
 elif cat /etc/issue | grep -Eqi "debian"; then
@@ -216,7 +205,6 @@ fi
 
 os_version=""
 
-# os version
 if [[ -f /etc/os-release ]]; then
     os_version=$(awk -F'[= ."]' '/VERSION_ID/{print $3}' /etc/os-release)
 fi
@@ -285,14 +273,6 @@ update() {
     else
         version=$2
     fi
-#    confirm "本功能会强制重装当前最新版，数据不会丢失，是否继续?" "n"
-#    if [[ $? != 0 ]]; then
-#        echo -e "${red}已取消${plain}"
-#        if [[ $1 != 0 ]]; then
-#            before_show_menu
-#        fi
-#        return 0
-#    fi
     bash <(curl -Ls https://raw.githubusercontent.com/LemonSpell/XrayR/master/install.sh) $version
     if [[ $? == 0 ]]; then
         echo -e "${green}更新完成，已自动重启 XrayR，请使用 XrayR log 查看运行日志${plain}"
@@ -443,15 +423,6 @@ show_log() {
 
 install_bbr() {
     bash <(curl -L -s https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh)
-    #if [[ $? == 0 ]]; then
-    #    echo ""
-    #    echo -e "${green}安装 bbr 成功，请重启服务器${plain}"
-    #else
-    #    echo ""
-    #    echo -e "${red}下载 bbr 安装脚本失败，请检查本机能否连接 Github${plain}"
-    #fi
-
-    #before_show_menu
 }
 
 update_shell() {
@@ -466,7 +437,6 @@ update_shell() {
     fi
 }
 
-# 0: running, 1: not running, 2: not installed
 check_status() {
     if [[ ! -f /etc/systemd/system/XrayR.service ]]; then
         return 2
@@ -592,7 +562,6 @@ show_menu() {
  ${green}12.${plain} 查看 XrayR 版本 
  ${green}13.${plain} 升级维护脚本
  "
- #后续更新可加入上方字符串中
     show_status
     echo && read -p "请输入选择 [0-13]: " num
 
@@ -667,11 +636,12 @@ fi
 XRAYR_EOF
 
     chmod +x /usr/bin/XrayR
-    ln -s /usr/bin/XrayR /usr/bin/xrayr # 小写兼容
+    rm -f /usr/bin/xrayr
+    ln -s /usr/bin/XrayR /usr/bin/xrayr
     chmod +x /usr/bin/xrayr
     curl -o /usr/bin/XrayR-tool -Ls https://raw.githubusercontent.com/LemonSpell/XrayR/master/XrayR-tool
     chmod +x /usr/bin/XrayR-tool
-    
+
     echo -e ""
     echo "XrayR 管理脚本使用方法 (兼容使用xrayr执行，大小写不敏感): "
     echo "------------------------------------------"
