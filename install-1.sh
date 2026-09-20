@@ -532,7 +532,6 @@ show_usage() {
     echo "XrayR disable      - 取消 XrayR 开机自启"
     echo "XrayR log          - 查看 XrayR 日志"
     echo "XrayR update       - 更新 XrayR"
-    echo "XrayR update x.x.x - 更新 XrayR 指定版本"
     echo "XrayR install      - 安装 XrayR"
     echo "XrayR uninstall    - 卸载 XrayR"
     echo "XrayR version      - 查看 XrayR 版本"
@@ -643,7 +642,7 @@ XRAYR_EOF
     chmod +x /usr/bin/XrayR-tool
 
     echo -e ""
-    echo "XrayR 管理脚本使用方法 (兼容使用xrayr执行，大小写不敏感): "
+    echo -e "XrayR 管理脚本使用方法 (兼容使用xrayr执行，大小写不敏感): "
     echo "------------------------------------------"
     echo "XrayR                    - 显示管理菜单 (功能更多)"
     echo "XrayR start              - 启动 XrayR"
@@ -654,9 +653,6 @@ XRAYR_EOF
     echo "XrayR disable            - 取消 XrayR 开机自启"
     echo "XrayR log                - 查看 XrayR 日志"
     echo "XrayR update             - 更新 XrayR"
-    echo "XrayR update x.x.x       - 更新 XrayR 指定版本"
-    echo "XrayR config             - 显示配置文件内容"
-    echo "XrayR config xx=xx yy=yy - 自动设置配置文件"
     echo "XrayR install            - 安装 XrayR"
     echo "XrayR uninstall          - 卸载 XrayR"
     echo "XrayR version            - 查看 XrayR 版本"
